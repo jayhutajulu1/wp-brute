@@ -12,7 +12,7 @@ br = '\033[94m'
 ua = open('ua.txt','rb').read().decode('utf8').splitlines()
 
 
-__banner__ = ('''%s
+__banner__ = ('''%s''')
       ^__^
       (%soo%s)\_______
       (__)\       )={%sD704T Team%s}
