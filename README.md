@@ -10,6 +10,6 @@
 pkg install python3 git
 pip install requests
 git clone https://github.com/jayhutajulu1/wpbf_massal.git
-cd w_brute
+cd wpbf_massal
 python3 wp-brute.py
 ```
