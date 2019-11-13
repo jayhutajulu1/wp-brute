@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-#Ya Maap codingan we berantakan :'v,jangan di recode ya KONTOL.
+#Ya Maap codingan we berantakan :'v
 
 import requests,readline,re,os,random
 from urllib.request import urlsplit
@@ -15,14 +15,14 @@ ua = open('ua.txt','rb').read().decode('utf8').splitlines()
 __banner__ = ('''%s
       ^__^
       (%soo%s)\_______
-      (__)\       )={%sHeker%s}
+      (__)\       )={%sD704T%s}
           ||----w |
           ||     ||
           oo     oo
 
-%s[+]%s WordPress Massal Brute Force..
-%s[+]%s Code: Jay Hutajulu a.k.a ./BarBarKing
-%s[+]%s Team: D704T HackerTeam Ft MedanHackingRulez % (p,m,p,h,p,h,p,h,p,h,p))
+%s[+]%s Tools Wordpress Massal Brute Force..
+%s[+]%s Author : Jay Hutajulu a.k.a ./BarBarKing
+%s[+]%s Team : D704T Ft MedanHackingRulez''' % (p,m,p,h,p,h,p,h,p,h,p))
 
 class Main():
     def __init__(self):
@@ -35,7 +35,7 @@ class Main():
 
     def sendu(self):
         try:
-            print('\n%s[info]%s Masukkan File list site nya.!!' % (h,p))
+            print('\n%s[info]%s masukkan file list site nya.!!' % (h,p))
             f = str(input('%s[info] %slist site: ' % (h,p)))
             self.site = open(f,'rb').read().decode('utf8').splitlines()
         except Exception as _er:
@@ -43,7 +43,7 @@ class Main():
 
     def u_p(self):
         try:
-            print('%s[info]%s Masukkan WordList' % (h,p))
+            print('%s[info]%s masukkan wordlist' % (h,p))
             us = str(input('%s[info]%s list user: ' % (br,p)))
             pw = str(input('%s[info]%s list pasw: ' % (br,p)))
             self.a = open(us,'rb').read().decode('latin').splitlines()
