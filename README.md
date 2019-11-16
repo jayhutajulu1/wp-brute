@@ -9,7 +9,8 @@
 ```
 pkg install python3 git
 pip install requests
+pip2 install requests
 git clone https://github.com/jayhutajulu1/wpbf_massal.git
 cd wpbf_massal
-python3 wp-brute.py
+python wp-brute.py
 ```
