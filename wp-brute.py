@@ -2,7 +2,7 @@
 #Ya Maap codingan we berantakan :'v,jangan di recode ya KONTOL.
 
 import requests,readline,re,os,random
-from urllib.Request import urlsplit
+from urllib.request import urlsplit
 requests = requests.Session()
 
 h = '\033[92m'
